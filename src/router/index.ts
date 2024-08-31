@@ -61,12 +61,12 @@ const router = createRouter({
 
 // this callback gonna be used on EVERY navigation
 router.beforeEach((to, _, next) => {
-    if (to.meta.requiresAuth && !store.state.user.token) { // making sure user is authorized
-        next({name: 'login'});
+    if (to.meta.requiresAuth && !store.state.user.token) {
+        next({ name: 'login' });
     } else if (to.meta.requiresGuest && store.state.user.token) {
-        next({name: 'app.dashboard'});
+        next({ name: 'app.dashboard' });
     } else {
-        next({name: 'login'});
+        next(); // Proceed to the requested route if no redirect is necessary
     }
 })
 

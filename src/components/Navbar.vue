@@ -3,6 +3,8 @@ import {Bars3BottomLeftIcon} from '@heroicons/vue/24/solid'
 import UserAvatar from "./UserAvatar.vue";
 
 const emit = defineEmits(['toggle-sidebar']);
+
+
 </script>
 
 <template>
