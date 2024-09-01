@@ -10,6 +10,10 @@ const store = createStore({
             token: sessionStorage.getItem('TOKEN'),
             data: {} as IUser
         },
+        products: {
+            data: [],
+            totalCount: 0
+        },
         loading: false
     } as IStoreType,
     getters: {},

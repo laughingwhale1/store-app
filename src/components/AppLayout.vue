@@ -8,7 +8,7 @@
   import Spinner from "../assets/Spinner.vue";
 
   const SIDEBAR_OPENED = ref(true)
-  const USER_REQ_COMPLETED = computed(() => store.state.user.data.id)
+  const USER_REQ_COMPLETED = computed(() => store.state.user.data?.id)
   function toggleSidebar () {
     SIDEBAR_OPENED.value = !SIDEBAR_OPENED.value
   }
