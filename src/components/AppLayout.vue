@@ -5,6 +5,7 @@
   import store from "../store";
   import {ApiResponse} from "../types/api.types.ts";
   import {IUser} from "../types/user.type.ts";
+  import Spinner from "../assets/Spinner.vue";
 
   const SIDEBAR_OPENED = ref(true)
   const USER_REQ_COMPLETED = computed(() => store.state.user.data.id)
@@ -36,6 +37,13 @@
         </div>
       </main>
       <!--  /  Content-->
+    </div>
+  </div>
+
+  <div v-else class="min-h-full bg-gray-200 flex items-center justify-center">
+    <div class="flex flex-col items-center">
+      <Spinner class="text-black w-7 h-7" />
+      <p class="mt-2">Please wait...</p>
     </div>
   </div>
 </template>

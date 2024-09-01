@@ -4,7 +4,7 @@ import * as mutations from './mutations.ts'
 import {IUser} from "../types/user.type.ts";
 import {IStoreType} from "../types/store.types.ts";
 
-export const store = createStore({
+const store = createStore({
     state: {
         user: {
             token: sessionStorage.getItem('TOKEN'),
