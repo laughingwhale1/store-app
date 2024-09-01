@@ -15,6 +15,6 @@ export function setToken (state: IStoreType, token: string) {
     }
 }
 
-export function toggleLoadingState (state: IStoreType) {
-    state.loading = !state.loading;
+export function setLoading (state: IStoreType, isLoading: boolean) {
+    state.loading = isLoading;
 }

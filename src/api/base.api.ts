@@ -9,6 +9,24 @@ type KeyValue<U> = {
 
 intercept();
 
+const handleError = (err: any) => {
+    if (err.response?.data) {
+        return { data: err.response.data };
+    } else {
+        return {
+            data: {
+                success: false,
+                errors: [
+                    {
+                        key: 'Request error',
+                        message: 'Request error',
+                    },
+                ],
+            },
+        };
+    }
+};
+
 class API<T> {
     async get(url: string, params: any, headers: KeyValue<string> = {}) {
         setBearerToken()
@@ -19,9 +37,7 @@ class API<T> {
                     ...headers,
                 },
             })
-            .catch(err => {
-                return { data: err.response.data };
-            });
+            .catch(err => handleError(err));
         return response.data;
     }
 
@@ -37,7 +53,7 @@ class API<T> {
                     ...headers,
                 },
             })
-            .catch(err => ({ data: err.response.data }));
+            .catch(err => handleError(err));
         return response.data;
     }
 
@@ -49,9 +65,7 @@ class API<T> {
                     ...headers,
                 },
             })
-            .catch(err => ({
-                data: err.response.data,
-            }));
+            .catch(err => handleError(err));
         return response.data;
     }
 
@@ -63,9 +77,7 @@ class API<T> {
                     ...headers,
                 },
             })
-            .catch(err => ({
-                data: err.response.data,
-            }));
+            .catch(err => handleError(err));
         return response.data;
     }
 
@@ -76,9 +88,7 @@ class API<T> {
                 data: body,
                 headers,
             })
-            .catch(err => ({
-                data: err.response.data,
-            }));
+            .catch(err => handleError(err));
         return response.data;
     }
 }

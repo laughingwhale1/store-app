@@ -15,10 +15,9 @@ export const intercept = () => {
         }, error => {
             console.log(error)
             if (error.response.status === 401) {
-                console.log('ha')
                 sessionStorage.removeItem('TOKEN');
-                window.location.href = '/'
+                window.location.href = '/login'
             }
-            console.error(error);
+            throw error;
         })
 }

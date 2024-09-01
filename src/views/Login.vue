@@ -2,39 +2,47 @@
 import GuestLayout from "../components/GuestLayout.vue";
 import {computed, ref} from "vue";
 import store from "../store";
-import {UserLoginRequest} from "../types/user.type.ts";
-import router from "../router";
+import {UserLoginRequest, UserLoginResponse} from "../types/user.type.ts";
 import Spinner from "../assets/Spinner.vue";
+import {useRouter} from "vue-router";
+import {ApiResponse, PayloadError} from "../types/api.types.ts";
 
+const router = useRouter()
 const userLoginReq: UserLoginRequest = {
   email: '',
   password: '',
   remember: false
 }
 
-const errorMsg = ref('')
+const errorMsg = ref([] as Array<PayloadError>)
 const loadingState = computed(() => store.state.loading);
 
 async function login() {
-  await store.dispatch('toggleLoadingAction')
-  store.dispatch('login', userLoginReq)
-      .then(() => {
-        router.push({name: 'app.dashboard'})
-        store.dispatch('toggleLoadingAction')
-      })
-      .catch(res => {
-        // TODO: make it consistent according to api type response across app
-        // errorMsg.value = res.errors?.[0]?.message;
-        errorMsg.value = res.data.message
-        store.dispatch('toggleLoadingAction')
-      })
-
+  await store.dispatch('toggleLoadingState', true)
+  const res: ApiResponse<UserLoginResponse> = await store.dispatch('login', userLoginReq);
+  if (res.success) {
+    await router.push({name: 'app.dashboard'});
+    await store.dispatch('toggleLoadingState', false)
+  } else {
+    errorMsg.value = res.errors;
+    await store.dispatch('toggleLoadingState', false)
+  }
 }
+
 </script>
 
 <template>
   <GuestLayout title="Sign in to your account">
     <form class="space-y-6" @submit.prevent="login" method="POST">
+      <div  v-if="errorMsg" class="flex flex-col gap-1.5">
+        <div
+            v-for="error in errorMsg"
+            :key="error.key"
+            class="flex items-center justify-center py-3 px-5 bg-red-500 text-white rounded"
+        >
+          {{ error.message }}
+        </div>
+      </div>
       <div>
         <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email address</label>
         <div class="mt-2">
@@ -92,7 +100,7 @@ async function login() {
               'hover:bg-indigo-500': loadingState
             }"
         >
-          <Spinner v-if="loadingState" />
+          <Spinner v-if="loadingState"/>
           Sign in
         </button>
       </div>

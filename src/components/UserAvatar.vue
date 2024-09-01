@@ -3,6 +3,7 @@ import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import { ChevronDownIcon, UserIcon, ExclamationCircleIcon } from '@heroicons/vue/24/solid'
 import store from "../store";
 import router from "../router";
+import {computed} from "vue";
 
 function logout () {
   store.dispatch('logout')
@@ -10,6 +11,8 @@ function logout () {
         router.push({name: 'login'})
       })
 }
+
+const userName = computed(() => store.state.user.data.name)
 </script>
 
 <template>
@@ -20,7 +23,7 @@ function logout () {
             class="flex items-center gap-2"
         >
           <img src="https://randomuser.me/api/portraits/men/78.jpg" alt="" class="rounded-full w-8"/>
-          John Smith
+          {{userName}}
           <ChevronDownIcon
               class="-mr-1 ml-2 h-5 w-5 text-violet-200 hover:text-violet-100"
               aria-hidden="true"
