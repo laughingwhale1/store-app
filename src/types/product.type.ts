@@ -4,9 +4,9 @@ export interface ProductsListResponse {
 }
 
 export interface ProductArrayType {
-    id: number,
-    title: string,
-    price: number,
-    updated_at: string,
+    id: number
+    title: string
+    price: number
+    updated_at: string
     image: string
 }

@@ -1,24 +1,24 @@
-import {createStore} from "vuex";
+import { createStore } from 'vuex'
 import * as actions from './actions.ts'
 import * as mutations from './mutations.ts'
-import {IUser} from "../types/user.type.ts";
-import {IStoreType} from "../types/store.types.ts";
+import { IUser } from '../types/user.type.ts'
+import { IStoreType } from '../types/store.types.ts'
 
 const store = createStore({
     state: {
         user: {
             token: sessionStorage.getItem('TOKEN'),
-            data: {} as IUser
+            data: {} as IUser,
         },
         products: {
             data: [],
-            totalCount: 0
+            totalCount: 0,
         },
-        loading: false
+        loading: false,
     } as IStoreType,
     getters: {},
     actions: actions,
-    mutations: mutations
-});
+    mutations: mutations,
+})
 
-export default store;
+export default store
