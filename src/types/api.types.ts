@@ -10,14 +10,12 @@ export type PayloadMessage = {
 
 export interface ApiResponse<T> {
     value: T;
-    status: number;
     success: boolean;
     errors: PayloadError[];
     messages: PayloadMessage[];
 }
 
 export interface ApiResponseEmpty {
-    status: number;
     success: boolean;
     errors: PayloadError[];
     messages: PayloadMessage[];

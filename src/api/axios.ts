@@ -1,7 +1,8 @@
 import axios from "axios";
 
 export const intercept = () => {
-    axios.defaults.baseURL = `${import.meta.env.VITE_API_BASE_URL}/api`
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+    axios.defaults.baseURL = `${baseUrl}/api`
 
     axios.interceptors.request.use(config => {
         // config.headers.Authorization = `Bearer ${setBearerToken()}`

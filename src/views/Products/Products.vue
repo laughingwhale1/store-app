@@ -20,12 +20,15 @@ const lastPage = computed(
 
 // Product modal
 const isOpen = ref(false)
+
 function closeModal() {
     isOpen.value = false
 }
+
 function openModal() {
     isOpen.value = true
 }
+
 // ===============
 
 console.log(perPage.value, products.value.totalCount)
