@@ -162,6 +162,7 @@ async function onSubmit() {
 
             if (result.status === 200) {
                 props.refetchProducts()
+                props.closeModal()
             }
         }
     } else {

@@ -71,11 +71,17 @@ export async function updateProduct({commit}: CommitObj, product: UpdateProductR
         form.append('title', product.title);
         form.append('image', product.image);
         form.append('description', product.description || '');
-        form.append('price', String('product.price'));
-        const res: ApiResponseEmpty = await API.put(`/products/${id}`, form)
+        form.append('price', String(product.price));
+        form.append('_method', 'PUT');
+        const res: ApiResponseEmpty = await API.post(`/product/${id}`, form)
         return res;
     }
-    const res: ApiResponseEmpty = await API.put(`/products/${id}`, product)
+    const res: ApiResponseEmpty = await API.put(`/product/${id}`, product)
+    return res;
+}
+
+export async function deleteProduct({commit}: CommitObj, productId: number) {
+    const res: ApiResponseEmpty = await API.delete(`/product/${productId}`)
     return res;
 }
 

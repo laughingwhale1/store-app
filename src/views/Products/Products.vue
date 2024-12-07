@@ -5,7 +5,8 @@ import { ApiResponse } from '../../types/api.types.ts'
 import Spinner from '../../assets/Spinner.vue'
 import { SortDirection } from '../../constants/sort.ts'
 import ProductModal from './ProductModal.vue'
-import { ProductListType } from '../../types/product.type.ts'
+import { ProductListType, ProductResourceType } from '../../types/product.type.ts'
+import { PRODUCT_INITIAL_VALUES } from '../../constants/constants.ts'
 
 const isLoading = computed(() => store.state.loading)
 
@@ -21,8 +22,11 @@ const lastPage = computed(
 // Product modal
 const isOpen = ref(false)
 
+const productModel = ref({...PRODUCT_INITIAL_VALUES})
+
 function closeModal() {
     isOpen.value = false
+    productModel.value = {...PRODUCT_INITIAL_VALUES}
 }
 
 function openModal() {
@@ -67,13 +71,21 @@ function orderByFn(orderedBy: SortDirection) {
     }
 }
 
-const productModel = ref({
-    id: 0,
-    title: '',
-    image: '',
-    description: '',
-    price: 0,
-})
+async function deleteProduct(productId: number) {
+    if (!confirm(`Are you sure you want to delete the product?`)) {
+        return
+    }
+    const res = await store.dispatch('deleteProduct', productId)
+    fetchProducts()
+}
+
+function startProductEditing (product: ProductResourceType) {
+    productModel.value.id = product.id;
+    productModel.value.title = product.title;
+    productModel.value.description = product.description;
+    productModel.value.price = product.price;
+    openModal()
+}
 </script>
 
 <template>
@@ -180,6 +192,7 @@ const productModel = ref({
                                 </svg>
                             </div>
                         </th>
+                        <th class="border-b-2 p-2 text-left">Actions</th>
                     </tr>
                 </thead>
 
@@ -200,6 +213,28 @@ const productModel = ref({
                         </td>
                         <td class="border-b p-2">$ {{ product.price }}</td>
                         <td class="border-b p-2">{{ product.updated_at }}</td>
+                        <td class="border-b p-2">
+                            <div class="flex gap-2">
+                                <button
+                                    type="button"
+                                    class="inline-flex justify-center rounded-md border border-transparent bg-blue-100
+                                            px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none
+                                            focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                    @click="deleteProduct(product.id)"
+                                >
+                                    Delete
+                                </button>
+                                <button
+                                    type="button"
+                                    class="inline-flex justify-center rounded-md border border-transparent bg-blue-100
+                                            px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none
+                                            focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                    @click="startProductEditing(product)"
+                                >
+                                    Update
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                 </tbody>
             </table>
