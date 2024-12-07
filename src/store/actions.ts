@@ -73,6 +73,9 @@ export async function updateProduct({commit}: CommitObj, product: UpdateProductR
         form.append('description', product.description || '');
         form.append('price', String(product.price));
         form.append('_method', 'PUT');
+        for (let [key, value] of form.entries()) {
+            console.log(key, value);
+        }
         const res: ApiResponseEmpty = await API.post(`/product/${id}`, form)
         return res;
     }
