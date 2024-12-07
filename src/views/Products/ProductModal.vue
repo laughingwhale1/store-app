@@ -27,35 +27,76 @@
                         leave-to="opacity-0 scale-95"
                     >
                         <DialogPanel
-                            class="w-full max-w-md transform overflow-hidden
-                            rounded-2xl bg-white p-6 text-left align-middle
-                            shadow-xl transition-all"
+                            class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
                         >
-                            <DialogTitle
-                                as="h3"
-                                class="text-lg font-medium leading-6 text-gray-900"
+                            <div
+                                v-if="isLoading"
+                                class="flex justify-center items-center min-h-80"
                             >
-                                Payment successful
-                            </DialogTitle>
-                            <div class="mt-2">
-                                <p class="text-sm text-gray-500">
-                                    Your payment has been successfully
-                                    submitted. We’ve sent you an email with all
-                                    of the details of your order.
-                                </p>
+                                <Spinner class="w-7 h-7" />
                             </div>
 
-                            <div class="mt-4">
-                                <button
-                                    type="button"
-                                    class="inline-flex justify-center rounded-md border border-transparent
-                                    bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900]
-                                    hover:bg-blue-200 focus:outline-none focus-visible:ring-2
-                                    focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                                    @click="$emit('closeModal')"
+                            <div v-else>
+                                <DialogTitle
+                                    as="h3"
+                                    class="text-lg font-medium leading-6 text-gray-900"
                                 >
-                                    Got it, thanks!
-                                </button>
+                                    {{
+                                        props?.product?.id ? 'Edit' : 'Create'
+                                    }}
+                                    Product
+                                </DialogTitle>
+
+                                <form @submit.prevent="onSubmit">
+                                    <div class="bg-white pt-2">
+                                        <CustomInput
+                                            class="mb-2"
+                                            v-model="product.title"
+                                            label="Product Title"
+                                        />
+                                        <CustomInput
+                                            type="file"
+                                            class="mb-2"
+                                            label="Product Image"
+                                            @change="
+                                                (file) => (product.image = file)
+                                            "
+                                        />
+                                        <CustomInput
+                                            type="textarea"
+                                            class="mb-2"
+                                            v-model="product.description"
+                                            label="Description"
+                                        />
+                                        <CustomInput
+                                            type="number"
+                                            class="mb-2"
+                                            v-model="product.price"
+                                            label="Price"
+                                            prepend="$"
+                                        />
+                                    </div>
+
+                                    <div class="flex gap-2 mt-4">
+                                        <button
+                                            type="button"
+                                            class="inline-flex justify-center rounded-md border border-transparent bg-blue-100
+                                            px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none
+                                            focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                            @click="$emit('closeModal')"
+                                        >
+                                            Close
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            class="inline-flex justify-center rounded-md border border-transparent bg-blue-100
+                                            px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none
+                                            focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                        >
+                                            Submit
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </DialogPanel>
                     </TransitionChild>
@@ -66,7 +107,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import {
     TransitionRoot,
     TransitionChild,
@@ -74,10 +114,67 @@ import {
     DialogPanel,
     DialogTitle,
 } from '@headlessui/vue'
+import { ProductResourceType } from '../../types/product.type.ts'
+import { onUpdated, ref } from 'vue'
+import Spinner from '../../assets/Spinner.vue'
+import CustomInput from '../../components/CustomInput.vue'
+import store from '../../store'
+import { ApiResponseEmpty } from '../../types/api.types.ts'
 
-const props = defineProps({
-    isOpen: Boolean
+interface IProps {
+    isOpen: boolean
+    product: ProductResourceType
+    closeModal: VoidFunction
+    refetchProducts: VoidFunction
+}
+
+const props = defineProps<IProps>()
+
+const isLoading = ref(false)
+
+const product = ref<ProductResourceType>({
+    description: props.product?.description,
+    id: props.product?.id,
+    image: props.product?.image,
+    price: props.product?.price,
+    title: props.product?.title,
 })
 
+onUpdated(() => {
+    product.value = {
+        description: props.product?.description,
+        id: props.product?.id,
+        image: props.product?.image,
+        price: props.product?.price,
+        title: props.product?.title,
+    }
+})
 
+async function onSubmit() {
+    isLoading.value = true
+    if (product.value.id) {
+        const result: ApiResponseEmpty = await store.dispatch(
+            'updateProduct',
+            product.value,
+        )
+        if (result) {
+            isLoading.value = false
+
+            if (result.status === 200) {
+                props.refetchProducts()
+            }
+        }
+    } else {
+        const result = await store.dispatch('createProduct', product.value)
+        if (result) {
+            isLoading.value = false;
+
+            if (result.status === 201) {
+                // TODO show notification
+                props.refetchProducts()
+                props.closeModal()
+            }
+        }
+    }
+}
 </script>

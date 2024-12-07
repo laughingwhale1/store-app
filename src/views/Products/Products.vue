@@ -2,10 +2,10 @@
 import { computed, onMounted, ref } from 'vue'
 import store from '../../store'
 import { ApiResponse } from '../../types/api.types.ts'
-import { ProductArrayType } from '../../types/product.type.ts'
 import Spinner from '../../assets/Spinner.vue'
 import { SortDirection } from '../../constants/sort.ts'
 import ProductModal from './ProductModal.vue'
+import { ProductListType } from '../../types/product.type.ts'
 
 const isLoading = computed(() => store.state.loading)
 
@@ -31,10 +31,12 @@ function openModal() {
 
 // ===============
 
-console.log(perPage.value, products.value.totalCount)
+function fetchProducts () {
+    getProducts(currentPage.value, perPage.value, search.value, orderBy.value)
+}
 
 onMounted(() => {
-    getProducts(currentPage.value, perPage.value, search.value, orderBy.value)
+    fetchProducts()
 })
 
 async function getProducts(
@@ -45,7 +47,7 @@ async function getProducts(
 ) {
     currentPage.value = page
     await store.dispatch('toggleLoadingState', true)
-    const result: ApiResponse<Array<ProductArrayType>> = await store.dispatch(
+    const result: ApiResponse<Array<ProductListType>> = await store.dispatch(
         'getProducts',
         { page, perPage, search, orderBy },
     )
@@ -64,6 +66,14 @@ function orderByFn(orderedBy: SortDirection) {
         return SortDirection.DESC
     }
 }
+
+const productModel = ref({
+    id: 0,
+    title: '',
+    image: '',
+    description: '',
+    price: 0,
+})
 </script>
 
 <template>
@@ -75,7 +85,13 @@ function orderByFn(orderedBy: SortDirection) {
         >
             Add new product
         </button>
-        <ProductModal :isOpen="isOpen" @closeModal="closeModal" />
+        <ProductModal
+            :isOpen="isOpen"
+            @closeModal="closeModal"
+            :closeModal="closeModal"
+            :product="productModel"
+            :refetchProducts="fetchProducts"
+        />
     </div>
 
     <!--    PRODUCTS TABLE-->

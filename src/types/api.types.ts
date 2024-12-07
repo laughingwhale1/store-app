@@ -13,12 +13,14 @@ export interface ApiResponse<T> {
     success: boolean;
     errors: PayloadError[];
     messages: PayloadMessage[];
+    status: number
 }
 
 export interface ApiResponseEmpty {
     success: boolean;
     errors: PayloadError[];
     messages: PayloadMessage[];
+    status: number
 }
 
 export interface PaginationLinks {

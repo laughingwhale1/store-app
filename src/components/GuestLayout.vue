@@ -1,18 +1,24 @@
 <script setup lang="ts">
-  const props = defineProps({
-    title: String
-  })
+interface IProps {
+    title: string
+}
+const props = defineProps<IProps>()
 </script>
 
 <template>
-  <div class="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+    <div
+        class="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8"
+    >
+        <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+            <h2
+                class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900"
+            >
+                {{ props.title }}
+            </h2>
+        </div>
 
-    <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-      <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">{{ props.title }}</h2>
+        <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+            <slot></slot>
+        </div>
     </div>
-
-    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-      <slot></slot>
-    </div>
-  </div>
 </template>

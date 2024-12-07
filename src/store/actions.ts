@@ -1,8 +1,8 @@
 import API from "../api/base.api.ts";
-import {ApiResponse} from "../types/api.types.ts";
+import { ApiResponse, ApiResponseEmpty } from '../types/api.types.ts'
 import {IUser, UserLoginRequest, UserLoginResponse} from "../types/user.type.ts";
 import {Commit} from "vuex";
-import {ProductArrayType} from "../types/product.type.ts";
+import { CreateProductRequest, ProductListType, UpdateProductRequest } from '../types/product.type.ts'
 import {SortDirection} from "../constants/sort.ts";
 
 interface CommitObj {
@@ -37,13 +37,45 @@ export async function getProducts (
     {commit}: CommitObj,
     {page, perPage, search, orderBy}: {page: number, perPage: number, search: string, orderBy: SortDirection}
 ) {
-    const res: ApiResponse<ProductArrayType> = await API.get('/product', {
+    const res: ApiResponse<ProductListType> = await API.get('/product', {
         page: page,
         per_page: perPage,
         search: search ? search : undefined,
         order_by: orderBy
     })
     commit('setProducts', res.value)
+    return res;
+}
+
+export async function createProduct({commit}: CommitObj, product: CreateProductRequest) {
+    if (product.image instanceof File) {
+        const form = new FormData();
+        form.append('title', product.title);
+        form.append('image', product.image);
+        form.append('description', product.description);
+        form.append('price', String( product.price));
+
+        const res: ApiResponseEmpty = await API.post('product', form)
+        return res;
+    }
+
+    const res: ApiResponseEmpty = await API.post('product', product)
+    return res;
+}
+
+export async function updateProduct({commit}: CommitObj, product: UpdateProductRequest) {
+    const id = product.id
+    if (product.image instanceof File) {
+        const form = new FormData();
+        form.append('id', String(product.id));
+        form.append('title', product.title);
+        form.append('image', product.image);
+        form.append('description', product.description || '');
+        form.append('price', String('product.price'));
+        const res: ApiResponseEmpty = await API.put(`/products/${id}`, form)
+        return res;
+    }
+    const res: ApiResponseEmpty = await API.put(`/products/${id}`, product)
     return res;
 }
 
