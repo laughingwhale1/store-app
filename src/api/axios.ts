@@ -1,4 +1,5 @@
 import axios from "axios";
+import store from '../store'
 
 export const intercept = () => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
@@ -15,6 +16,7 @@ export const intercept = () => {
         }, error => {
             console.log(error)
             if (error.response.status === 401) {
+                store.commit('setToken', null)
                 sessionStorage.removeItem('TOKEN');
                 window.location.href = '/login'
             }
